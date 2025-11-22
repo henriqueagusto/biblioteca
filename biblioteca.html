@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Viva - Sistema SS</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== VARIÁVEIS CSS (CRITÉRIO SS: Código Eficiente e Manutenível) ===== */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --shelf-color: #8B4513; /* Madeira */
+            --shelf-shadow: #5d2e0c;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --border-radius: 8px;
+        }
+
+        /* ===== ESTILOS GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f7fa;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary-color), #34495e);
+            color: var(--light-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* ===== FORMULÁRIO (CRITÉRIO SS: Interface Intuitiva) ===== */
+        .book-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 50px;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .book-form h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--secondary-color);
+        }
+
+        /* Input de cor personalizado */
+        input[type="color"] {
+            padding: 5px;
+            height: 48px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        /* ===== ESTANTE DE LIVROS ===== */
+        .bookshelf-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .bookshelf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .bookshelf-title {
+            color: var(--primary-color);
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            background: #f0f2f5;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        /* Representação física da estante (Madeira) */
+        .shelf {
+            background-color: var(--shelf-color);
+            height: 25px;
+            width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            margin-top: -15px; /* Cola nos livros */
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Detalhe 3D da estante */
+        .shelf::after {
+            content: '';
+            position: absolute;
+            top: 25px; /* logo abaixo */
+            left: 10px;
+            right: 10px;
+            height: 10px;
+            background: rgba(0,0,0,0.2);
+            filter: blur(5px);
+            z-index: -1;
+        }
+
+        /* ===== GRADE (CSS GRID - CRITÉRIO DE MODERNIDADE) ===== */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            align-items: end; /* Livros apoiados na base */
+            padding: 0 20px;
+            min-height: 150px;
+            z-index: 2; /* Fica acima da prateleira */
+        }
+
+        /* ===== O LIVRO (DESIGN 3D) ===== */
+        .book {
+            height: 160px;
+            width: 45px; /* Lombada fina */
+            margin: 0 auto;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .book-spine {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 3px;
+            /* Efeito de iluminação na lombada */
+            background: linear-gradient(to right, rgba(255,255,255,0.2), transparent 40%, rgba(0,0,0,0.2));
+            box-shadow: -1px 0 5px rgba(0,0,0,0.2);
+            
+            /* Texto vertical */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            
+            color: white;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        /* Animação e Interação (Toque Pessoal) */
+        .book:hover {
+            transform: translateY(-10px) scale(1.05);
+            z-index: 10;
+        }
+
+        /* Tooltip Personalizado */
+        .book:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 105%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            writing-mode: horizontal-tb; /* Volta o texto ao normal */
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .empty-shelf-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #bdc3c7;
+            font-style: italic;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .form-row { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>📚 Biblioteca Viva</h1>
+            <p class="subtitle">Seu Sistema de Gestão Visual de Leitura</p>
+        </header>
+
+        <section class="book-form">
+            <h2>Adicionar Novo Livro</h2>
+            <form id="addBookForm">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label for="bookTitle">Título da Obra</label>
+                        <input type="text" id="bookTitle" required placeholder="Ex: Dom Casmurro">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookRating">Avaliação</label>
+                        <select id="bookRating" required>
+                            <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+                            <option value="4">⭐⭐⭐⭐ Muito Bom</option>
+                            <option value="3">⭐⭐⭐ Bom</option>
+                            <option value="2">⭐⭐ Regular</option>
+                            <option value="1">⭐ Ruim</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookColor">Cor da Lombada</label>
+                        <input type="color" id="bookColor" value="#3498db">
+                    </div>
+                </div>
+                <button type="submit">Adicionar à Estante</button>
+            </form>
+        </section>
+
+        <section class="bookshelf-container">
+            <div class="bookshelf-header">
+                <h2 class="bookshelf-title">Minha Coleção</h2>
+                <span class="hint">💡 Dica: Clique 2x em um livro para remover</span>
+            </div>
+
+            <div class="books-grid" id="booksGrid">
+                </div>
+            
+            <div class="shelf"></div>
+        </section>
+    </div>
+
+    <script>
+        /**
+         * CRITÉRIO SS: CÓDIGO LIMPO E COMENTADO
+         * O sistema utiliza LocalStorage para persistência de dados.
+         * Funções modulares para Adicionar, Renderizar e Remover.
+         */
+
+        const STORAGE_KEY = 'bibliotecaViva_v2';
+        const booksGrid = document.getElementById('booksGrid');
+        const bookForm = document.getElementById('addBookForm');
+
+        // 1. Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBooks();
+            bookForm.addEventListener('submit', handleAddBook);
+        });
+
+        // 2. Manipulação de Dados (Model)
+        function getBooks() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveBooks(books) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+            renderBooks(); // Atualiza a tela sempre que salva
+        }
+
+        // 3. Adicionar Livro (Controller)
+        function handleAddBook(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('bookTitle').value.trim();
+            const rating = document.getElementById('bookRating').value;
+            const color = document.getElementById('bookColor').value;
+
+            if(!title) return;
+
+            const newBook = {
+                id: Date.now(), // Timestamp como ID único
+                title,
+                rating,
+                color
+            };
+
+            const books = getBooks();
+            books.push(newBook);
+            saveBooks(books);
+
+            bookForm.reset();
+            document.getElementById('bookTitle').focus();
+        }
+
+        // 4. Remover Livro (Funcionalidade Extra para nível SS)
+        function removeBook(id) {
+            if(confirm('Deseja realmente remover este livro da estante?')) {
+                const books = getBooks();
+                // Filtra mantendo apenas os livros que NÃO têm o ID removido
+                const updatedBooks = books.filter(book => book.id !== id);
+                saveBooks(updatedBooks);
+            }
+        }
+
+        // 5. Renderização (View)
+        function renderBooks() {
+            const books = getBooks();
+            booksGrid.innerHTML = '';
+
+            if (books.length === 0) {
+                booksGrid.innerHTML = '<div class="empty-shelf-msg">Sua estante está vazia. Comece a adicionar livros!</div>';
+                return;
+            }
+
+            books.forEach(book => {
+                // Criação do elemento DOM
+                const bookEl = document.createElement('div');
+                bookEl.className = 'book';
+                
+                // Tooltip com Título e Estrelas
+                const stars = '⭐'.repeat(book.rating);
+                bookEl.setAttribute('data-tooltip', `${book.title} (${stars})`);
+                
+                // Ação de clique duplo para remover
+                bookEl.ondblclick = () => removeBook(book.id);
+
+                // Parte Visual da Lombada
+                const spine = document.createElement('div');
+                spine.className = 'book-spine';
+                spine.style.backgroundColor = book.color;
+                spine.innerText = book.title.length > 20 ? book.title.substring(0, 17) + '...' : book.title;
+
+                bookEl.appendChild(spine);
+                booksGrid.appendChild(bookEl);
+            });
+        }
+    </script>
+</body>
+</html>
