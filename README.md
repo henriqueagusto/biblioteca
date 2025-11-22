@@ -2,7 +2,7 @@ PROJETO: Biblioteca Viva - Sistema de Gestão Visual de Leitura
 ALUNO: [Seu Nome Aqui]
 DISCIPLINA: [Nome da Matéria]
 
-DESCRIÇÃO DO PROJETO (NÍVEL SS):
+DESCRIÇÃO DO PROJETO :
 Este projeto vai além de uma lista de cadastro simples. Foi desenvolvida uma "Estante Virtual Interativa" que simula uma biblioteca física. 
 
 DIFERENCIAIS TÉCNICOS IMPLEMENTADOS:
